@@ -1,0 +1,42 @@
+[
+  {
+    "product_id": "P001",
+    "name": "Laptop",
+    "category": "Electronics",
+    "price": 1200,
+    "stock": 30,
+    "tags": [4, 7, 2]
+  },
+  {
+    "product_id": "P002",
+    "name": "Smartphone",
+    "category": "Electronics",
+    "price": 800,
+    "stock": 50,
+    "tags": [1, 6]
+  },
+  {
+    "product_id": "P003",
+    "name": "Desk Chair",
+    "category": "Furniture",
+    "price": 150,
+    "stock": 100,
+    "tags": [5, 8]
+  },
+  {
+    "product_id": "P004",
+    "name": "Wireless Mouse",
+    "category": "Electronics",
+    "price": 20,
+    "stock": 200,
+    "tags": [3, 9]
+  },
+  {
+    "product_id": "P005",
+    "name": "Notebook",
+    "category": "Stationery",
+    "price": 5,
+    "stock": 500,
+    "tags": [2, 4]
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "customer_id": "C001",
+    "name": "Alice Johnson",
+    "email": "alice@example.com",
+    "orders": ["O001", "O002"],
+    "preferences": ["electronics", "books"]
+  },
+  {
+    "customer_id": "C002",
+    "name": "Bob Smith",
+    "email": "bob@example.com",
+    "orders": ["O003"],
+    "preferences": ["fashion", "electronics"]
+  },
+  {
+    "customer_id": "C003",
+    "name": "Carol Davis",
+    "email": "carol@example.com",
+    "orders": ["O004", "O005", "O006"],
+    "preferences": ["home", "kitchen", "books"]
+  }
+]

@@ -1,0 +1,411 @@
+mysql> 
+mysql> -- Drop the procedure if it already exists
+mysql> DROP PROCEDURE IF EXISTS TotalSpendingByDateRange;
+Query OK, 0 rows affected, 1 warning (0.05 sec)
+
+mysql> 
+mysql> -- Create the procedure to calculate total spending within a date range
+mysql> CREATE PROCEDURE TotalSpendingByDateRange(IN start_date DATE, IN end_date DATE)
+    -> BEGIN
+    ->     SELECT SUM(total_amount) AS total_spent
+    ->     FROM `Order`
+    ->     WHERE order_date BETWEEN start_date AND end_date;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 5
+mysql> END;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'END' at line 1
+mysql> 
+mysql> -- Drop the function if it already exists
+mysql> DROP FUNCTION IF EXISTS CountProductsInCategory;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> 
+mysql> -- Create the function to count products in a specific category
+mysql> CREATE FUNCTION CountProductsInCategory(cat_id INT) 
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE product_count INT;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 5
+mysql>     SELECT COUNT(*) INTO product_count
+    ->     FROM Product
+    ->     WHERE category_id = cat_id;
+ERROR 1327 (42000): Undeclared variable: product_count
+mysql>     RETURN product_count;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'RETURN product_count' at line 1
+mysql> END;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'END' at line 1
+mysql> system clear;
+
+mysql> -- Switch to the Amazon_db database
+mysql> USE Amazon_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> 
+mysql> -- Drop the procedure if it already exists
+mysql> DROP PROCEDURE IF EXISTS TotalSpendingByDateRange;
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+mysql> 
+mysql> -- Use a custom delimiter for the procedure definition
+mysql> DELIMITER //
+mysql> 
+mysql> -- Create the procedure to calculate total spending within a date range
+mysql> CREATE PROCEDURE TotalSpendingByDateRange(IN start_date DATE, IN end_date DATE)
+    -> BEGIN
+    ->     SELECT SUM(total_amount) AS total_spent
+    ->     FROM `Order`
+    ->     WHERE order_date BETWEEN start_date AND end_date;
+    -> END //
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> 
+mysql> -- Reset the delimiter back to semicolon
+mysql> DELIMITER ;
+mysql> 
+mysql> -- Drop the function if it already exists
+mysql> DROP FUNCTION IF EXISTS CountProductsInCategory;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> 
+mysql> -- Use a custom delimiter for the function definition
+mysql> DELIMITER //
+mysql> 
+mysql> -- Create the function to count products in a specific category
+mysql> CREATE FUNCTION CountProductsInCategory(cat_id INT) 
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE product_count INT;
+    ->     SELECT COUNT(*) INTO product_count
+    ->     FROM Product
+    ->     WHERE category_id = cat_id;
+    ->     RETURN product_count;
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Reset the delimiter back to semicolon
+mysql> DELIMITER ;
+mysql> SELECT * FROM `Order` WHERE order_date BETWEEN '2023-01-01' AND '2023-12-31';
+Empty set (0.00 sec)
+
+mysql> INSERT INTO `Order` (order_id, customer_id, order_date, total_amount)
+    -> VALUES (101, 1, '2023-06-15', 500.00);
+ERROR 1062 (23000): Duplicate entry '101' for key 'order.PRIMARY'
+mysql> INSERT INTO `Order` (customer_id, order_date, total_amount)
+    -> VALUES (1, '2023-06-15', 500.00);
+ERROR 1364 (HY000): Field 'order_id' doesn't have a default value
+mysql> INSERT INTO `Order` (order_id, customer_id, order_date, total_amount)
+    -> VALUES (102, 1, '2023-06-15', 500.00);
+ERROR 1062 (23000): Duplicate entry '102' for key 'order.PRIMARY'
+mysql> SELECT DISTINCT order_date FROM `Order` ORDER BY order_date;
++------------+
+| order_date |
++------------+
+| 2024-10-22 |
+| 2024-10-23 |
++------------+
+2 rows in set (0.00 sec)
+
+mysql> DESCRIBE Customer;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| customer_id | int          | NO   | PRI | NULL    |       |
+| name        | varchar(100) | YES  |     | NULL    |       |
+| email       | varchar(100) | YES  |     | NULL    |       |
+| address     | varchar(255) | YES  |     | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> DESCRIBE Category;
++---------------+--------------+------+-----+---------+-------+
+| Field         | Type         | Null | Key | Default | Extra |
++---------------+--------------+------+-----+---------+-------+
+| category_id   | int          | NO   | PRI | NULL    |       |
+| category_name | varchar(100) | YES  |     | NULL    |       |
++---------------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> DESCRIBE Product;
++-------------+---------------+------+-----+---------+-------+
+| Field       | Type          | Null | Key | Default | Extra |
++-------------+---------------+------+-----+---------+-------+
+| product_id  | int           | NO   | PRI | NULL    |       |
+| name        | varchar(100)  | YES  |     | NULL    |       |
+| price       | decimal(10,2) | YES  |     | NULL    |       |
+| description | text          | YES  |     | NULL    |       |
+| category_id | int           | YES  | MUL | NULL    |       |
++-------------+---------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> DESCRIBE `Order`;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| order_id     | int           | NO   | PRI | NULL    |       |
+| customer_id  | int           | YES  | MUL | NULL    |       |
+| order_date   | date          | YES  |     | NULL    |       |
+| total_amount | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Product.name, Category.category_name
+    -> FROM Product
+    -> JOIN Category ON Product.category_id = Category.category_id
+    -> WHERE Product.price > %s;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%s' at line 4
+mysql> SELECT Product.name, Category.category_name
+    -> FROM Product
+    -> JOIN Category ON Product.category_id = Category.category_id
+    -> WHERE Product.price > %s;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%s' at line 4
+mysql> SELECT Product.name, Category.category_name
+    -> FROM Product
+    -> JOIN Category ON Product.category_id = Category.category_id
+    -> WHERE Product.price > 100;
++------------+---------------+
+| name       | category_name |
++------------+---------------+
+| Smartphone | Electronics   |
++------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT name FROM Customer
+    -> UNION
+    -> SELECT name FROM Product WHERE Product.category_id = 2;
++------------+
+| name       |
++------------+
+| John Doe   |
+| Jane Smith |
+| T-shirt    |
++------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT Customer.name, SUM(`Order`.total_amount) AS total_spent
+    -> FROM Customer
+    -> JOIN `Order` ON Customer.customer_id = `Order`.customer_id
+    -> WHERE `Order`.order_date >= '2024-01-01'
+    -> GROUP BY Customer.name;
++------------+-------------+
+| name       | total_spent |
++------------+-------------+
+| John Doe   |      719.98 |
+| Jane Smith |       19.99 |
++------------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM Product
+    -> WHERE category_id IN (
+    ->     SELECT category_id FROM Category WHERE category_name = 'Electronics'
+    -> );
++------------+
+| name       |
++------------+
+| Smartphone |
++------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM Customer
+    -> WHERE EXISTS (
+    ->     SELECT 1 FROM `Order`
+    ->     WHERE `Order`.customer_id = Customer.customer_id AND total_amount > 500
+    -> );
++----------+
+| name     |
++----------+
+| John Doe |
++----------+
+1 row in set (0.00 sec)
+
+mysql> USE Amazon_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> 
+mysql> -- Drop the procedure if it already exists
+mysql> DROP PROCEDURE IF EXISTS AddToCart;
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+mysql> 
+mysql> -- Create a new stored procedure
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE PROCEDURE AddToCart(
+    ->     IN customer_id INT,
+    ->     IN product_id INT,
+    ->     IN quantity INT
+    -> )
+    -> BEGIN
+    ->     -- Check if the item already exists in the cart
+    ->     IF EXISTS (SELECT * FROM Cart WHERE customer_id = customer_id AND product_id = product_id) THEN
+    ->         -- If it exists, update the quantity
+    ->         UPDATE Cart
+    ->         SET quantity = quantity + quantity
+    ->         WHERE customer_id = customer_id AND product_id = product_id;
+    ->     ELSE
+    ->         -- Otherwise, insert the item into the cart
+    ->         INSERT INTO Cart (customer_id, product_id, quantity)
+    ->         VALUES (customer_id, product_id, quantity);
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> -- Drop the function if it already exists
+mysql> DROP FUNCTION IF EXISTS CalculateCartTotal;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> 
+mysql> -- Create a new function
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE FUNCTION CalculateCartTotal(customer_id INT)
+    -> RETURNS DECIMAL(10, 2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE total DECIMAL(10, 2);
+    ->     -- Calculate the total cost of items in the cart
+    ->     SELECT SUM(Product.price * Cart.quantity) INTO total
+    ->     FROM Cart
+    ->     JOIN Product ON Cart.product_id = Product.product_id
+    ->     WHERE Cart.customer_id = customer_id;
+    ->     RETURN total;
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> import mysql.connector
+    -> 
+    -> # Define a function to create a database connection
+    -> def create_connection():
+    ->     return mysql.connector.connect(
+    ->         host='localhost',
+    ->         user='root',
+    ->         password='Snovvy682!',
+    ->         database='Amazon_db'
+    ->     )
+    -> 
+    -> # Function to add an item to the cart using the stored procedure
+    -> def add_to_cart(customer_id, product_id, quantity):
+    ->     connection = create_connection()
+    ->     cursor = connection.cursor()
+    ->     try:
+    ->         # Call the stored procedure to add item to cart
+    ->         cursor.callproc('AddToCart', [customer_id, product_id, quantity])
+    ->         connection.commit()
+    ->         print(f"Added product {product_id} to cart with quantity {quantity}.")
+    ->     except mysql.connector.Error as err:
+    ->         print("Error adding to cart:", err)
+    ->     finally:
+    ->         cursor.close()
+    ->         connection.close()
+    -> 
+    -> # Function to calculate the total cost of items in the cart using the stored function
+    -> def calculate_cart_total(customer_id):
+    ->     connection = create_connection()
+    ->     cursor = connection.cursor()
+    ->     try:
+    ->         # Call the stored function to calculate cart total
+    ->         cursor.execute("SELECT CalculateCartTotal(%s)", (customer_id,))
+    ->         total = cursor.fetchone()[0]
+    ->         print(f"Total cart cost for customer {customer_id}: ${total}")
+    ->     except mysql.connector.Error as err:
+    ->         print("Error calculating cart total:", err)
+    ->     finally:
+    ->         cursor.close()
+    ->         connection.close()
+    -> 
+    -> # Example usage
+    -> # Add items to the cart
+    -> add_to_cart(1, 101, 2)  # Add 2 units of product 101 for customer 1
+    -> add_to_cart(1, 102, 1)  # Add 1 unit of product 102 for customer 1
+    -> 
+    -> # Calculate the cart total for customer 1
+    -> calculate_cart_total(1)
+    -> USE Amazon_db;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'mysql.connector
+
+
+def create_connection():
+    return mysql.connector.connect(
+ ' at line 1
+mysql> 
+mysql> -- Drop the procedure if it already exists
+mysql> DROP PROCEDURE IF EXISTS AddToCart;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> 
+mysql> -- Create a new stored procedure
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE PROCEDURE AddToCart(
+    ->     IN customer_id INT,
+    ->     IN product_id INT,
+    ->     IN quantity INT
+    -> )
+    -> BEGIN
+    ->     -- Check if the item already exists in the cart
+    ->     IF EXISTS (SELECT * FROM Cart WHERE customer_id = customer_id AND product_id = product_id) THEN
+    ->         -- If it exists, update the quantity
+    ->         UPDATE Cart
+    ->         SET quantity = quantity + quantity
+    ->         WHERE customer_id = customer_id AND product_id = product_id;
+    ->     ELSE
+    ->         -- Otherwise, insert the item into the cart
+    ->         INSERT INTO Cart (customer_id, product_id, quantity)
+    ->         VALUES (customer_id, product_id, quantity);
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> -- Drop the function if it already exists
+mysql> DROP FUNCTION IF EXISTS CalculateCartTotal;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> -- Create a new function
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE FUNCTION CalculateCartTotal(customer_id INT)
+    -> RETURNS DECIMAL(10, 2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE total DECIMAL(10, 2);
+    ->     -- Calculate the total cost of items in the cart
+    ->     SELECT SUM(Product.price * Cart.quantity) INTO total
+    ->     FROM Cart
+    ->     JOIN Product ON Cart.product_id = Product.product_id
+    ->     WHERE Cart.customer_id = customer_id;
+    ->     RETURN total;
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> USE Amazon_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> 
+mysql> CREATE TABLE Cart (
+    ->     cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     customer_id INT,
+    ->     product_id INT,
+    ->     quantity INT NOT NULL,
+    ->     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
+    ->     FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    -> );
+
+
